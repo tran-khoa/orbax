@@ -842,6 +842,7 @@ class StringHandler(TypeHandler):
     check_input_arguments(values, infos)
     if jax.process_index() == 0:
       directory = infos[0].path
+      directory.mkdir(exist_ok=True)
       strings = {info.name: value for value, info in zip(values, infos)}
       path = directory / self._filename
       path.write_text(json.dumps(strings))
@@ -987,6 +988,6 @@ def default_restore_type(args: RestoreArgs) -> Any:
   if isinstance(args, ArrayRestoreArgs):
     return jax.Array
   elif isinstance(args, RestoreArgs):
-    return np.ndarray
+    return args.restore_type or np.ndarray
   else:
     raise ValueError(f'Unsupported restore_args type: {type(args)}')
